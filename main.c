@@ -1,17 +1,33 @@
 #include "builtins.h"
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wait.h>
 
-int readline(char **arguments);
+int interrupted = 0;
+int readLine(char **arguments);
+
+void sigHandler(int signum) {
+  // printf("sigint handler");
+  interrupted = 1;
+}
 
 int main(int argc, char **argv) {
+  signal(SIGINT, sigHandler);
+  signal(SIGQUIT, sigHandler);
   while (1) {
     printf("myshell$ ");
     char **arguments = malloc(sizeof(char) * 500);
     int count = readLine(arguments);
+    if (interrupted == 1) {
+      // printf("interrupted=1 \n");
+      // getchar();
+      interrupted = 0;
+      fflush(stdin);
+      continue;
+    }
     int index = find_builtin_index(arguments[0]);
-    printf("index=%d \n", index);
     if (index != -1) {
       // returns 0 if call exit
       if (builtin_pointers[index](arguments) == 0) {
