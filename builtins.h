@@ -10,8 +10,7 @@
  * exit is returning 0 which in turns quits the shell.
  */
 int cd(char **args) {
-  // if count of the argument is more than one than error mesage should be
-  // generated
+  // check if cd has exactly one argument
   if (args[1] == NULL || args[2] != NULL) {
     printf("Error: Incorrect number of arguments for \"cd\" 1 argument "
            "required \n");
@@ -20,7 +19,6 @@ int cd(char **args) {
   return 1;
 }
 int my_exit(char **args) {
-  // if there should not be any args to this exit
   if (args[1] != NULL) {
     printf("Error: Incorrect number of arguments for \"exit\" 0 argument "
            "required \n");
@@ -39,13 +37,14 @@ int help(char **args) {
   return 1;
 }
 
-// we are definint builtin as a name of array of char * and initializing with
-// value in right side
+// we are defined builtin as a name of array of char * and initialized them
 
 char *builtin_str[] = {"cd", "exit", "help"};
 int (*builtin_pointers[3])(char **arguments) = {cd, my_exit, help};
 const int noOfBuiltins = 3;
 
+// returns index of the corresponding builtin function if present
+// otherwise returns -1
 int find_builtin_index(char *command) {
   for (int i = 0; i < noOfBuiltins; i++) {
     int a = strcmp(command, builtin_str[i]);
