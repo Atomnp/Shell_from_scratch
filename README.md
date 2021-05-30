@@ -28,7 +28,7 @@ Now that we have covered how fork() system call work we will now cover how does 
 
 when we call `exec()` function in our code process calling the `exec()` function is wiped out of the memory and replaced by the next process that we want to execute. so `exec()` function never return except on error, and code below the exec function will never execute because the process that contain exec function is wiped out of the memory by the new process
 
-When you call a `exec` family method it doesn't create a new process, instead `exec` replaces the current process memory and instruction set etc with the process you want to run.
+When you call a `exec()` family method it doesn't create a new process, instead `exec()` replaces the current process memory and instruction set etc with the process you want to run.
 
 ### How to know more about syscalls?
 
@@ -40,7 +40,7 @@ For specific syscalls
 
 To view all syscalls
 
-- man syscall
+- man syscalls
 
 some useful links to understand why `fork()` and `exec()` calls are used to create new processes in unix based system
 

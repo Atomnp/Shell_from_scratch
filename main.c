@@ -4,14 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wait.h>
-
+// interrupted variable is used when Ctrl+c or Ctrl+ \ is pressed;
 int interrupted = 0;
 int readLine(char **arguments);
 
-void sigHandler(int signum) {
-  // printf("sigint handler");
-  interrupted = 1;
-}
+void sigHandler(int signum) { interrupted = 1; }
 
 int main(int argc, char **argv) {
   signal(SIGINT, sigHandler);
@@ -21,8 +18,6 @@ int main(int argc, char **argv) {
     char **arguments = malloc(sizeof(char) * 500);
     int count = readLine(arguments);
     if (interrupted == 1) {
-      // printf("interrupted=1 \n");
-      // getchar();
       interrupted = 0;
       fflush(stdin);
       continue;
