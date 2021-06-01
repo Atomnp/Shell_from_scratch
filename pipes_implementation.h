@@ -15,7 +15,9 @@ int fork_pipes(command *commands, int command_count)
         int write_end = fd[1];
         int read_end = fd[0];
 
-        spawn_process(prev_read_end, write_end, commands[i].cmd);
+        int response = spawn_process(prev_read_end, write_end, commands[i].cmd);
+        if (response == -1)
+            return -1;
 
         //we can close the write end because child process is writeing here
         close(write_end);
@@ -26,7 +28,9 @@ int fork_pipes(command *commands, int command_count)
     {
         dup2(prev_read_end, 0);
     }
-    return execvp(commands[i].cmd[0], commands[i].cmd);
+
+    execvp(commands[i].cmd[0], commands[i].cmd);
+    return -1;
 }
 int spawn_process(int read_end, int write_end, char **command)
 {
@@ -47,7 +51,8 @@ int spawn_process(int read_end, int write_end, char **command)
             //we can safely close the write end
             close(write_end);
         }
-        return execvp(command[0], command);
+        execvp(command[0], command);
+        return -1;
     }
     else
     {

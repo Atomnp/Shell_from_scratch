@@ -20,10 +20,14 @@ int main(int argc, char **argv) {
   } else {
     signal(SIGINT, sigHandler);
     signal(SIGQUIT, sigHandler);
+
     while (1) {
       printf("myshell$ ");
       command *commands = malloc(sizeof(char) * 500);
       int pipelined_command_count = readLine(commands);
+      if (pipelined_command_count == -1) {
+        return 0;
+      }
 
       if (interrupted == 1) {
         interrupted = 0;
@@ -45,7 +49,10 @@ int main(int argc, char **argv) {
         if (pid == 0) {
           // child process
           // execvp(commands[0].cmd[0], commands[0].cmd);
-          fork_pipes(commands, pipelined_command_count);
+          int result = fork_pipes(commands, pipelined_command_count);
+          if (result == -1) {
+            printf("Error while executing command \n");
+          }
 
         } else {
           // parent process
@@ -68,8 +75,10 @@ int readLine(command *commands) {
   size_t size = 0;
   int noOfChars = getline(&line, &size, stdin);
   if (noOfChars == -1) {
-    printf("Error while reading the line");
+    // printf("Error while reading the line");
+
     free(line);
+    return -1;
   }
   // when i input from the std in it counts the final \n character and also
   // stored so changing it t0 \0

@@ -30,6 +30,8 @@ when we call `exec()` function in our code process calling the `exec()` function
 
 When you call a `exec()` family method it doesn't create a new process, instead `exec()` replaces the current process memory and instruction set etc with the process you want to run.
 
+### Shell Pipes
+
 ### How to know more about syscalls?
 
 For specific syscalls
