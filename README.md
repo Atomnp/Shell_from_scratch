@@ -1,6 +1,6 @@
 # Shell_from_scratch
 
-This is the code for implementation of linux shell from scratch
+This is the code for implementation of bare minimum linux shell from scratch, it supports simple command execution and pipes.
 
 ## Prerequisite
 
