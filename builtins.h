@@ -9,24 +9,30 @@
  * shell return 0 if it should exit current shell, for example in below example
  * exit is returning 0 which in turns quits the shell.
  */
-int cd(char **args) {
+int cd(char **args)
+{
   // check if cd has exactly one argument
-  if (args[1] == NULL || args[2] != NULL) {
+  if (args[1] == NULL || args[2] != NULL)
+  {
     printf("Error: Incorrect number of arguments for \"cd\" 1 argument "
            "required \n");
   }
   chdir(args[1]);
   return 1;
 }
-int my_exit(char **args) {
-  if (args[1] != NULL) {
+int my_exit(char **args)
+{
+  if (args[1] != NULL)
+  {
     printf("Error: Incorrect number of arguments for \"exit\" 0 argument "
            "required \n");
   }
   return 0;
 }
-int help(char **args) {
-  if (args[1] != NULL) {
+int help(char **args)
+{
+  if (args[1] != NULL)
+  {
     printf("Error: Incorrect number of arguments for \"help\" 0 argument "
            "required \n");
   }
@@ -45,10 +51,13 @@ const int noOfBuiltins = 3;
 
 // returns index of the corresponding builtin function if present
 // otherwise returns -1
-int find_builtin_index(char *command) {
-  for (int i = 0; i < noOfBuiltins; i++) {
+int find_builtin_index(char *command)
+{
+  for (int i = 0; i < noOfBuiltins; i++)
+  {
     int a = strcmp(command, builtin_str[i]);
-    if (strcmp(command, builtin_str[i]) == 0) {
+    if (strcmp(command, builtin_str[i]) == 0)
+    {
       return i;
     }
   }
