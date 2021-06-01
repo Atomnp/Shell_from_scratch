@@ -1,5 +1,6 @@
 #include "builtins.h"
 #include "declarations.h"
+#include "pipes_implementation.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +12,6 @@
 
 // interrupted variable is used when Ctrl+c or Ctrl+ \ is pressed;
 int interrupted = 0;
-int readLine(command *arguments);
-
 void sigHandler(int signum) { interrupted = 1; }
 
 int main(int argc, char **argv) {
@@ -25,6 +24,7 @@ int main(int argc, char **argv) {
       printf("myshell$ ");
       command *commands = malloc(sizeof(char) * 500);
       int pipelined_command_count = readLine(commands);
+
       if (interrupted == 1) {
         interrupted = 0;
         fflush(stdin);
@@ -37,13 +37,15 @@ int main(int argc, char **argv) {
           return 0;
         }
       } else {
+        // fork_pipes(commands, pipelined_command_count);
         int pid = fork();
         if (pid < 0) {
           printf("Some error occured while forking the process");
         }
         if (pid == 0) {
           // child process
-          execvp(commands[0].cmd[0], commands[0].cmd);
+          // execvp(commands[0].cmd[0], commands[0].cmd);
+          fork_pipes(commands, pipelined_command_count);
 
         } else {
           // parent process
