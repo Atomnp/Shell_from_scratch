@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
           // execvp(commands[0].cmd[0], commands[0].cmd);
           int result = fork_pipes(commands, pipelined_command_count);
           if (result == -1) {
-            printf("Error while executing command \n");
+            printf("Error : while executing command \n");
             return 0;
           }
 
@@ -99,6 +99,8 @@ int readLine(command *commands) {
     commands[i].cmd = singleCommand;
     commands[i].count = argCount;
   }
+  free(single_command_string);
+  free(pipelined_commands);
   return command_count;
 }
 /*
