@@ -21,38 +21,38 @@ int main(int argc, char **argv) {
     int pipelined_command_count = readLine(commands);
     if (pipelined_command_count == -1) {
       return 0;
-    }
-
-    if (interrupted == 1) {
-      interrupted = 0;
-      fflush(stdin);
-      continue;
-    }
-    int index = find_builtin_index(commands[0].cmd[0]);
-    if (index != -1) {
-      // returns 0 if call exit
-      if (builtin_pointers[index](commands[0].cmd) == 0) {
-        return 0;
+    } else if (pipelined_command_count > 0) {
+      if (interrupted == 1) {
+        interrupted = 0;
+        fflush(stdin);
+        continue;
       }
-    } else {
-      // fork_pipes(commands, pipelined_command_count);
-      int pid = fork();
-      if (pid < 0) {
-        printf("Some error occured while forking the process");
-      }
-      if (pid == 0) {
-        // child process
-        // execvp(commands[0].cmd[0], commands[0].cmd);
-        int result = fork_pipes(commands, pipelined_command_count);
-        if (result == -1) {
-          printf("Error while executing command \n");
+      int index = find_builtin_index(commands[0].cmd[0]);
+      if (index != -1) {
+        // returns 0 if call exit
+        if (builtin_pointers[index](commands[0].cmd) == 0) {
           return 0;
         }
-
       } else {
-        // parent process
-        int status;
-        wait(&status);
+        // fork_pipes(commands, pipelined_command_count);
+        int pid = fork();
+        if (pid < 0) {
+          printf("Some error occured while forking the process");
+        }
+        if (pid == 0) {
+          // child process
+          // execvp(commands[0].cmd[0], commands[0].cmd);
+          int result = fork_pipes(commands, pipelined_command_count);
+          if (result == -1) {
+            printf("Error while executing command \n");
+            return 0;
+          }
+
+        } else {
+          // parent process
+          int status;
+          wait(&status);
+        }
       }
     }
   }
@@ -73,6 +73,10 @@ int readLine(command *commands) {
 
     free(line);
     return -1;
+  }
+  if (noOfChars == 0) {
+    free(line);
+    return 0;
   }
   // when i input from the std in it counts the final \n character and also
   // stored so changing it t0 \0
@@ -95,7 +99,6 @@ int readLine(command *commands) {
     commands[i].cmd = singleCommand;
     commands[i].count = argCount;
   }
-
   return command_count;
 }
 /*
