@@ -7,58 +7,52 @@
 #include <string.h>
 #include <wait.h>
 
-// toggle this macro for test purpose
-#define TESTING 0
-
 // interrupted variable is used when Ctrl+c or Ctrl+ \ is pressed;
 int interrupted = 0;
 void sigHandler(int signum) { interrupted = 1; }
 
 int main(int argc, char **argv) {
-  if (TESTING) {
-    test();
-  } else {
-    signal(SIGINT, sigHandler);
-    signal(SIGQUIT, sigHandler);
+  signal(SIGINT, sigHandler);
+  signal(SIGQUIT, sigHandler);
 
-    while (1) {
-      printf("myshell$ ");
-      command *commands = malloc(sizeof(char) * 500);
-      int pipelined_command_count = readLine(commands);
-      if (pipelined_command_count == -1) {
+  while (1) {
+    printf("myshell$ ");
+    command *commands = malloc(sizeof(char) * 500);
+    int pipelined_command_count = readLine(commands);
+    if (pipelined_command_count == -1) {
+      return 0;
+    }
+
+    if (interrupted == 1) {
+      interrupted = 0;
+      fflush(stdin);
+      continue;
+    }
+    int index = find_builtin_index(commands[0].cmd[0]);
+    if (index != -1) {
+      // returns 0 if call exit
+      if (builtin_pointers[index](commands[0].cmd) == 0) {
         return 0;
       }
-
-      if (interrupted == 1) {
-        interrupted = 0;
-        fflush(stdin);
-        continue;
+    } else {
+      // fork_pipes(commands, pipelined_command_count);
+      int pid = fork();
+      if (pid < 0) {
+        printf("Some error occured while forking the process");
       }
-      int index = find_builtin_index(commands[0].cmd[0]);
-      if (index != -1) {
-        // returns 0 if call exit
-        if (builtin_pointers[index](commands[0].cmd) == 0) {
+      if (pid == 0) {
+        // child process
+        // execvp(commands[0].cmd[0], commands[0].cmd);
+        int result = fork_pipes(commands, pipelined_command_count);
+        if (result == -1) {
+          printf("Error while executing command \n");
           return 0;
         }
-      } else {
-        // fork_pipes(commands, pipelined_command_count);
-        int pid = fork();
-        if (pid < 0) {
-          printf("Some error occured while forking the process");
-        }
-        if (pid == 0) {
-          // child process
-          // execvp(commands[0].cmd[0], commands[0].cmd);
-          int result = fork_pipes(commands, pipelined_command_count);
-          if (result == -1) {
-            printf("Error while executing command \n");
-          }
 
-        } else {
-          // parent process
-          int status;
-          wait(&status);
-        }
+      } else {
+        // parent process
+        int status;
+        wait(&status);
       }
     }
   }

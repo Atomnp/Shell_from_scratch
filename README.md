@@ -32,6 +32,18 @@ When you call a `exec()` family method it doesn't create a new process, instead 
 
 ### Shell Pipes
 
+Pipes are the feature provided by an operating system for interprocess communication,The Unix/Linux systems allow stdout of a command to be connected to stdin of another command. We can make it do so by using the pipe character ‘|’.Pipe is used to combine two or more commands, and in this, the output of one command acts as input to another command, and this command’s output may act as input to the next command and so on
+
+in our shell we implemented this using two new system calls `dup2()` and `pipe()`
+
+`dup2(int oldfd,int newfd)`:The dup() system call creates a copy of the file descriptor oldfd, using the newfd
+
+`pipe(int pipefd[2])`:The array pipefd is used to
+return two file descriptors referring to the ends of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
+the write end of the pipe.
+
+To implement pipes we loop through each pipelined command connecting stdout of one command to the std in of the other command, logic for this can be found in `pipes_implementation.h` file of this project.
+
 ### How to know more about syscalls?
 
 For specific syscalls
